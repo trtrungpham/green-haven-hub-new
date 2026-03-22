@@ -3,6 +3,23 @@
 -- Run this in Supabase SQL Editor
 -- ============================================
 
+-- 0. Tạo bảng admin_users (để quản lý tài khoản admin)
+CREATE TABLE IF NOT EXISTS admin_users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  name TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Policy cho admin_users
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admin users readable" ON admin_users FOR SELECT USING (true);
+CREATE POLICY "Admin users insertable" ON admin_users FOR INSERT WITH CHECK (true);
+
+-- NOTE: Sau khi chạy script này, hãy tạo admin user qua Supabase Auth
+-- hoặc chạy: supabase auth signup với email: admin@vuonxanh.com
+
 -- 1. Tạo bảng products
 CREATE TABLE IF NOT EXISTS products (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

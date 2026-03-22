@@ -29,40 +29,51 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkUser();
+    let mounted = true;
+
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          if (session?.user) {
+            setUser({
+              id: session.user.id,
+              email: session.user.email || "",
+              name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
+            });
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Auth init error:", error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || "",
-          name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
-        });
-      } else {
-        setUser(null);
+      if (mounted) {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
+          });
+        } else {
+          setUser(null);
+        }
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  const checkUser = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || "",
-          name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
-        });
-      }
-    } catch (error) {
-      console.error("Error checking user:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -72,7 +83,6 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) {
-        console.error("Login error:", error.message);
         return { success: false, error: error.message };
       }
 
@@ -87,7 +97,6 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: false, error: "Login failed" };
     } catch (error: any) {
-      console.error("Login error:", error);
       return { success: false, error: error.message || "An unexpected error occurred" };
     }
   };

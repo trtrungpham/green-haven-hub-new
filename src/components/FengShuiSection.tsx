@@ -7,7 +7,7 @@ const elements = [
   { id: "moc", name: "Mộc", emoji: "🌿", color: "bg-green-100 text-green-800", desc: "Cây lá xanh tươi, phát triển mạnh" },
   { id: "thuy", name: "Thủy", emoji: "💧", color: "bg-blue-100 text-blue-800", desc: "Cây thủy sinh, lá mềm mại" },
   { id: "hoa", name: "Hỏa", emoji: "🔥", color: "bg-red-100 text-red-800", desc: "Cây lá đỏ, hoa rực rỡ" },
-  { id: "tho", name: "Thổ", emoji: "🪨", color: "bg-amber-100 text-amber-800", desc: "Sen đá, xương rồng, cây mọng nước" },
+  { id: "tho", name: "Thổ", emoji: "⛰️", color: "bg-amber-100 text-amber-800", desc: "Sen đá, xương rồng, cây mọng nước" },
 ];
 
 const FengShuiSection = () => {

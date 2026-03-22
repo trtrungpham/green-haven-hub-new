@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const filters = [
-  { icon: "🪴", label: "Cây để bàn", slug: "desk" },
+  { icon: "🌱", label: "Cây để bàn", slug: "desk" },
   { icon: "🌳", label: "Cây đại sảnh", slug: "lobby" },
   { icon: "🌵", label: "Sen đá", slug: "succulent" },
   { icon: "🎁", label: "Quà tặng", slug: "gift" },

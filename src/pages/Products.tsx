@@ -171,7 +171,7 @@ const Products = () => {
                     <img src={p.image} alt={p.name} className="w-24 h-24 rounded-lg object-cover" />
                     <div className="flex-1">
                       <h3 className="font-display font-semibold text-foreground">{p.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{p.shortDesc}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{p.short_desc}</p>
                       <p className="text-primary font-bold mt-2">{new Intl.NumberFormat("vi-VN").format(p.price)}₫</p>
                     </div>
                   </div>

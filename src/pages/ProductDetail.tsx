@@ -48,12 +48,12 @@ const ProductDetail = () => {
           {/* Info */}
           <div>
             <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">{product.name}</h1>
-            <p className="text-muted-foreground mb-6">{product.shortDesc}</p>
+            <p className="text-muted-foreground mb-6">{product.short_desc}</p>
 
             <div className="flex items-baseline gap-3 mb-6">
               <span className="text-3xl font-bold text-primary">{formatPrice(totalPrice)}</span>
-              {product.originalPrice && bundle === "plant" && (
-                <span className="text-lg text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
+              {product.original_price && bundle === "plant" && (
+                <span className="text-lg text-muted-foreground line-through">{formatPrice(product.original_price)}</span>
               )}
             </div>
 
@@ -77,7 +77,7 @@ const ProductDetail = () => {
                   <PawPrint className="h-6 w-6 text-terracotta" />
                   <span className="text-xs text-muted-foreground">Thú cưng</span>
                   <span className="text-sm font-medium text-foreground">
-                    {product.petSafe ? "An toàn ✅" : "Cẩn thận ⚠️"}
+                    {product.pet_safe ? "An toàn ✅" : "Cẩn thận ⚠️"}
                   </span>
                 </div>
               </div>

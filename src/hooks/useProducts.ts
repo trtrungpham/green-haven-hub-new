@@ -1,27 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { Product } from "@/data/products";
+import { Product, products as mockProducts } from "@/data/products";
 
-// Hook mẫu để lấy dữ liệu từ bảng 'products' trên Supabase
-// Bạn có thể dùng cách tương tự cho categories, users, v.v.
 export const useProducts = () => {
   return useQuery({
     queryKey: ["products"],
     queryFn: async (): Promise<Product[]> => {
-      // Gọi API Supabase để lấy toàn bộ products
-      const { data, error } = await supabase
-        .from("products")
-        .select("*");
-      
-      if (error) {
-        console.error("Supabase Error:", error.message);
-        throw new Error(error.message);
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.warn("Supabase Error, using mock data:", error.message);
+          return mockProducts;
+        }
+
+        return data && data.length > 0 ? data : mockProducts;
+      } catch (error) {
+        console.warn("Failed to fetch from Supabase, using mock data:", error);
+        return mockProducts;
       }
-      
-      return data as Product[];
     },
-    // Nếu chưa có kết nối Supabase thật, bạn có thể uncomment dòng dưới đây
-    // để fallback về data mock tạm thời trong quá trình dev:
-    // initialData: () => import("@/data/products").then(m => m.products),
+    initialData: mockProducts,
   });
 };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { Product } from "@/data/products";
+import { Product, products as mockProducts } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,7 +48,6 @@ const emptyProduct = {
 };
 
 const ProductsPage = () => {
-  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -58,14 +57,26 @@ const ProductsPage = () => {
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async (): Promise<Product[]> => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.warn("Supabase Error, using mock data:", error.message);
+          return mockProducts;
+        }
+
+        return data && data.length > 0 ? data : mockProducts;
+      } catch (error) {
+        console.warn("Failed to fetch from Supabase, using mock data:", error);
+        return mockProducts;
+      }
     },
+    initialData: mockProducts,
   });
+  const queryClient = useQueryClient();
 
   const createMutation = useMutation({
     mutationFn: async (product: typeof formData) => {

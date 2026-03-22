@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { useAuth, useLogout } from "@/contexts/useAuth";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Package,
-  ShoppingBag,
   LogOut,
   Menu,
   X,
@@ -14,7 +13,8 @@ import {
 } from "lucide-react";
 
 const AdminLayout = () => {
-  const { user, logout } = useAdminAuth();
+  const user = useAuth();
+  const logout = useLogout();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -77,8 +77,8 @@ const AdminLayout = () => {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              <p className="text-sm font-medium truncate">{user?.name || "Admin"}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>
             </div>
           </div>
           <Button

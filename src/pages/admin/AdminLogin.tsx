@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,6 @@ const AdminLogin = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
-  const { login } = useAdminAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,15 +37,20 @@ const AdminLogin = () => {
         } else if (data.user) {
           navigate("/admin");
         } else {
-          setError("Đăng ký thành công. Vui lòng kiểm tra email để xác thực.");
+          setError("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
         }
       } else {
-        const result = await login(email, password);
-        
-        if (result.success) {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          setError(error.message);
+        } else if (data.user) {
           navigate("/admin");
         } else {
-          setError(result.error || "Đăng nhập thất bại");
+          setError("Đăng nhập thất bại");
         }
       }
     } catch (err: any) {
@@ -75,7 +78,7 @@ const AdminLogin = () => {
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span className="break-words">{error}</span>
+                <span>{error}</span>
               </div>
             )}
 
@@ -88,7 +91,7 @@ const AdminLogin = () => {
                   placeholder="Nguyễn Văn A"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  required={isSignup}
+                  required
                 />
               </div>
             )}

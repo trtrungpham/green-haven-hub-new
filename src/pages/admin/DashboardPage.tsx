@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Package, ShoppingBag, TrendingUp, DollarSign } from "lucide-react";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { useAuth } from "@/contexts/useAuth";
 
 const DashboardPage = () => {
-  const { user } = useAdminAuth();
+  const user = useAuth();
 
   const { data: products } = useQuery({
     queryKey: ["admin-products-count"],
@@ -48,7 +48,7 @@ const DashboardPage = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Xin chào, {user?.name}!</p>
+        <p className="text-muted-foreground">Xin chào, {user?.name || "Admin"}!</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

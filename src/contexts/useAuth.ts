@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { Loader2 } from "lucide-react";
 
 interface User {
   id: string;
@@ -9,25 +7,27 @@ interface User {
   name: string;
 }
 
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+let cachedUser: User | null = null;
+
+export const getCurrentUser = () => cachedUser;
+
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>(cachedUser);
 
   useEffect(() => {
     const checkUser = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          setUser({
+          cachedUser = {
             id: session.user.id,
             email: session.user.email || "",
             name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
-          });
+          };
+          setUser(cachedUser);
         }
       } catch (error) {
         console.error("Auth error:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -35,12 +35,14 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser({
+        cachedUser = {
           id: session.user.id,
           email: session.user.email || "",
           name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
-        });
+        };
+        setUser(cachedUser);
       } else {
+        cachedUser = null;
         setUser(null);
       }
     });
@@ -48,17 +50,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  return user;
+};
 
-  if (!user) {
-    return <Navigate to="/admin/login" replace />;
-  }
-
-  return <>{children}</>;
+export const useLogout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
+    cachedUser = null;
+  };
+  return logout;
 };

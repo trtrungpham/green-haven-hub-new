@@ -30,6 +30,21 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || "",
+          name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Admin",
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const checkUser = async () => {
@@ -57,6 +72,7 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) {
+        console.error("Login error:", error.message);
         return { success: false, error: error.message };
       }
 
@@ -70,14 +86,19 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       return { success: false, error: "Login failed" };
-    } catch (error) {
-      return { success: false, error: "An unexpected error occurred" };
+    } catch (error: any) {
+      console.error("Login error:", error);
+      return { success: false, error: error.message || "An unexpected error occurred" };
     }
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (

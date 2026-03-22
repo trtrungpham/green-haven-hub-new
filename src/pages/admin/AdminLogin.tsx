@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Leaf } from "lucide-react";
+import { AlertCircle, Leaf, UserPlus, LogIn } from "lucide-react";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
   const { login } = useAdminAuth();
   const navigate = useNavigate();
 
@@ -19,12 +22,36 @@ const AdminLogin = () => {
     setError("");
     setIsLoading(true);
 
-    const result = await login(email, password);
-    
-    if (result.success) {
-      navigate("/admin");
-    } else {
-      setError(result.error || "Login failed");
+    try {
+      if (isSignup) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: name,
+            },
+          },
+        });
+
+        if (error) {
+          setError(error.message);
+        } else if (data.user) {
+          navigate("/admin");
+        } else {
+          setError("Đăng ký thành công. Vui lòng kiểm tra email để xác thực.");
+        }
+      } else {
+        const result = await login(email, password);
+        
+        if (result.success) {
+          navigate("/admin");
+        } else {
+          setError(result.error || "Đăng nhập thất bại");
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || "Đã xảy ra lỗi");
     }
     
     setIsLoading(false);
@@ -39,14 +66,30 @@ const AdminLogin = () => {
               <Leaf className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
-            <p className="text-muted-foreground mt-2">Đăng nhập để quản lý cửa hàng</p>
+            <p className="text-muted-foreground mt-2">
+              {isSignup ? "Tạo tài khoản quản trị" : "Đăng nhập để quản lý cửa hàng"}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-                <AlertCircle className="h-4 w-4" />
-                {error}
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span className="break-words">{error}</span>
+              </div>
+            )}
+
+            {isSignup && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Tên</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Nguyễn Văn A"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required={isSignup}
+                />
               </div>
             )}
 
@@ -71,18 +114,43 @@ const AdminLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
               />
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+              {isLoading ? (
+                "Đang xử lý..."
+              ) : isSignup ? (
+                <>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Tạo tài khoản
+                </>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Đăng nhập
+                </>
+              )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <a href="/" className="text-sm text-muted-foreground hover:text-primary">
-              ← Quay về trang chủ
-            </a>
+          <div className="mt-6 space-y-2 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignup(!isSignup);
+                setError("");
+              }}
+              className="text-sm text-primary hover:underline"
+            >
+              {isSignup ? "Đã có tài khoản? Đăng nhập" : "Chưa có tài khoản? Tạo mới"}
+            </button>
+            <div>
+              <a href="/" className="text-sm text-muted-foreground hover:text-primary">
+                ← Quay về trang chủ
+              </a>
+            </div>
           </div>
         </div>
       </div>

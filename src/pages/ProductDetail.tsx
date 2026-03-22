@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Droplets, Sun, PawPrint, ChevronLeft } from "lucide-react";
 import { useState } from "react";
 
+import NotFound from "./NotFound";
+
 const bundleOptions = [
   { id: "plant", label: "Chỉ lấy cây", priceAdd: 0 },
   { id: "plant-pot", label: "Cây + Chậu gốm", priceAdd: 120000 },
@@ -21,11 +23,7 @@ const ProductDetail = () => {
   const [bundle, setBundle] = useState("plant");
 
   if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Không tìm thấy sản phẩm</p>
-      </div>
-    );
+    return <NotFound />;
   }
 
   const selectedBundle = bundleOptions.find((b) => b.id === bundle)!;

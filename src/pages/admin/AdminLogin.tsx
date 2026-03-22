@@ -22,7 +22,7 @@ const AdminLogin = () => {
 
     try {
       if (isSignup) {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error: signupError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -32,21 +32,21 @@ const AdminLogin = () => {
           },
         });
 
-        if (error) {
-          setError(error.message);
-        } else if (data.user) {
+        if (signupError) {
+          setError(signupError.message);
+        } else if (data.user && data.session) {
           navigate("/admin");
         } else {
           setError("Đăng ký thành công! Vui lòng kiểm tra email để xác thực.");
         }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error: loginError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
-        if (error) {
-          setError(error.message);
+        if (loginError) {
+          setError(loginError.message);
         } else if (data.user) {
           navigate("/admin");
         } else {
@@ -54,7 +54,12 @@ const AdminLogin = () => {
         }
       }
     } catch (err: any) {
-      setError(err.message || "Đã xảy ra lỗi");
+      console.error("Auth error:", err);
+      if (err.message?.includes("fetch") || err.message?.includes("network")) {
+        setError("Lỗi kết nối. Vui lòng kiểm tra Supabase đã được cấu hình đúng.");
+      } else {
+        setError(err.message || "Đã xảy ra lỗi");
+      }
     }
     
     setIsLoading(false);
@@ -76,8 +81,8 @@ const AdminLogin = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <div className="flex items-start gap-2 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
@@ -91,7 +96,7 @@ const AdminLogin = () => {
                   placeholder="Nguyễn Văn A"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  required
+                  required={isSignup}
                 />
               </div>
             )}

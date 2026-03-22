@@ -2,7 +2,7 @@ import { useState } from "react";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
+import ChatBot from "@/components/ChatBot";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/data/products";
 import { Trash2, Gift, Truck, Calendar } from "lucide-react";
@@ -61,7 +61,7 @@ const Cart = () => {
         </div>
       </div>
       <Footer />
-      <ChatButton />
+      <ChatBot />
     </div>
   );
 };

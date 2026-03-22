@@ -1,7 +1,7 @@
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
+import ChatBot from "@/components/ChatBot";
 import { BookOpen } from "lucide-react";
 
 const blogPosts = [
@@ -57,7 +57,7 @@ const Blog = () => (
       </div>
     </div>
     <Footer />
-    <ChatButton />
+    <ChatBot />
   </div>
 );
 

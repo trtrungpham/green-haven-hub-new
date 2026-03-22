@@ -3,7 +3,7 @@ import { products, formatPrice } from "@/data/products";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
+import ChatBot from "@/components/ChatBot";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Droplets, Sun, PawPrint, ChevronLeft } from "lucide-react";
@@ -139,7 +139,7 @@ const ProductDetail = () => {
         )}
       </div>
       <Footer />
-      <ChatButton />
+      <ChatBot />
     </div>
   );
 };

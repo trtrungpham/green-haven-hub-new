@@ -6,7 +6,7 @@ import BestSellers from "@/components/BestSellers";
 import FengShuiSection from "@/components/FengShuiSection";
 import SocialProof from "@/components/SocialProof";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
+import ChatBot from "@/components/ChatBot";
 
 const Index = () => (
   <div className="min-h-screen">
@@ -18,7 +18,7 @@ const Index = () => (
     <FengShuiSection />
     <SocialProof />
     <Footer />
-    <ChatButton />
+    <ChatBot />
   </div>
 );
 

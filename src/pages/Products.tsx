@@ -5,7 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
+import ChatBot from "@/components/ChatBot";
 import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -182,7 +182,7 @@ const Products = () => {
         </div>
       </div>
       <Footer />
-      <ChatButton />
+      <ChatBot />
     </div>
   );
 };

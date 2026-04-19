@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   ShoppingCart, Share2, ChevronLeft, Truck, Shield, Star, 
-  MessageCircle, Plus, Minus, Heart, Check, Store, Clock
+  MessageCircle, Plus, Minus, Heart, Check, Store, Clock, Leaf
 } from "lucide-react";
 
 const bundleOptions = [
@@ -235,6 +235,47 @@ const ProductDetail = () => {
             <MessageCircle className="h-4 w-4 mr-1" />
             Chat
           </Button>
+        </div>
+      </div>
+
+      {/* Shop Full Info - Like old website */}
+      <div className="bg-white px-4 py-6 border-t mt-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 rounded-lg flex items-center justify-center">
+            <Leaf className="h-4 w-4 text-white" />
+          </div>
+          <span className="font-semibold">Vườn Xanh</span>
+        </div>
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Mang thiên nhiên vào không gian sống của bạn. Cây cảnh chất lượng, giao hàng tận nơi.
+        </p>
+        
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <h4 className="font-medium mb-2">Danh mục</h4>
+            <div className="space-y-1 text-gray-500 text-xs">
+              <p>Cây để bàn</p>
+              <p>Cây đại sảnh</p>
+              <p>Sen đá</p>
+              <p>Quà tặng</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-medium mb-2">Chính sách</h4>
+            <div className="space-y-1 text-gray-500 text-xs">
+              <p>Đổi trả 7 ngày nếu cây héo</p>
+              <p>Bảo hành 30 ngày cho chậu</p>
+              <p>Miễn phí ship từ 500k</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-sm text-gray-500">
+          <h4 className="font-medium mb-2">Liên hệ</h4>
+          <p className="text-xs">123 Nguyễn Văn Cừ, Q.5, TP.HCM</p>
+          <p className="text-xs">0901 234 567</p>
+          <p className="text-xs">hello@vuonxanh.vn</p>
+          <p className="text-xs">8:00 - 18:00 (T2-CN)</p>
         </div>
       </div>
 

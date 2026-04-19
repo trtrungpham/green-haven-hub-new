@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
 import { products, formatPrice } from "@/data/products";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
@@ -6,10 +7,11 @@ import Footer from "@/components/Footer";
 import ChatBot from "@/components/ChatBot";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Droplets, Sun, PawPrint, ChevronLeft } from "lucide-react";
-import { useState } from "react";
-
-import NotFound from "./NotFound";
+import { Input } from "@/components/ui/input";
+import { 
+  ShoppingCart, Share2, ChevronLeft, Truck, Shield, Star, 
+  MessageCircle, Plus, Minus, Heart, Check
+} from "lucide-react";
 
 const bundleOptions = [
   { id: "plant", label: "Chỉ lấy cây", priceAdd: 0 },
@@ -17,131 +19,249 @@ const bundleOptions = [
   { id: "plant-pot-soil", label: "Cây + Chậu + Đất dinh dưỡng", priceAdd: 180000 },
 ];
 
+const reviewImages = [
+  "https://picsum.photos/seed/review1/200",
+  "https://picsum.photos/seed/review2/200",
+  "https://picsum.photos/seed/review3/200",
+];
+
+const reviews = [
+  { name: "Nguyễn***", rating: 5, date: "15/04/2026", content: "Cây đẹp, giao hàng nhanh chóng! Đóng gói cẩn thận, cây không bị hư gì. Shop uy tín 👍", images: ["img1", "img2"] },
+  { name: "Trần***", rating: 5, date: "14/04/2026", content: "Tuyệt vời! Cây Monstera đẹp hơn trong hình. Lá xanh mượt, rất khỏe. Giao đúng ngày luôn!", images: ["img1"] },
+  { name: "Lê***", rating: 5, date: "12/04/2026", content: "Mua lần 2 rồi, lần nào cũng okie. Shop chăm sóc khách hàng cực tốt. Đề xuất mọi người nên mua ở đây!", images: ["img1", "img2", "img3"] },
+];
+
 const ProductDetail = () => {
   const { slug } = useParams();
   const product = products.find((p) => p.slug === slug);
   const [bundle, setBundle] = useState("plant");
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
 
-  if (!product) {
-    return <NotFound />;
-  }
+  if (!product) return <NotFound />;
 
   const selectedBundle = bundleOptions.find((b) => b.id === bundle)!;
   const totalPrice = product.price + selectedBundle.priceAdd;
-  const related = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
 
   return (
-    <div className="min-h-screen">
-      <AnnouncementBar />
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <Link to="/products" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
-          <ChevronLeft className="h-4 w-4" /> Quay lại danh mục
-        </Link>
-
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Image */}
-          <div className="rounded-2xl overflow-hidden bg-card shadow-soft">
-            <img src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
-          </div>
-
-          {/* Info */}
-          <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">{product.name}</h1>
-            <p className="text-muted-foreground mb-6">{product.short_desc}</p>
-
-            <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-3xl font-bold text-primary">{formatPrice(totalPrice)}</span>
-              {product.original_price && bundle === "plant" && (
-                <span className="text-lg text-muted-foreground line-through">{formatPrice(product.original_price)}</span>
-              )}
-            </div>
-
-            {/* Care Card */}
-            <div className="bg-card rounded-xl p-5 shadow-soft mb-6">
-              <h3 className="font-display font-semibold text-foreground mb-3">Hướng dẫn chăm sóc</h3>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="flex flex-col items-center gap-1.5">
-                  <Droplets className="h-6 w-6 text-blue-500" />
-                  <span className="text-xs text-muted-foreground">Tưới nước</span>
-                  <span className="text-sm font-medium text-foreground">{product.water}</span>
-                </div>
-                <div className="flex flex-col items-center gap-1.5">
-                  <Sun className="h-6 w-6 text-gold" />
-                  <span className="text-xs text-muted-foreground">Ánh sáng</span>
-                  <span className="text-sm font-medium text-foreground">
-                    {product.light === "direct" ? "Nắng trực tiếp" : product.light === "indirect" ? "Tán xạ" : "Bóng râm"}
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-1.5">
-                  <PawPrint className="h-6 w-6 text-terracotta" />
-                  <span className="text-xs text-muted-foreground">Thú cưng</span>
-                  <span className="text-sm font-medium text-foreground">
-                    {product.pet_safe ? "An toàn ✅" : "Cẩn thận ⚠️"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Bundle Select */}
-            <div className="mb-6">
-              <label className="text-sm font-medium text-foreground mb-2 block">Lựa chọn đi kèm</label>
-              <div className="space-y-2">
-                {bundleOptions.map((opt) => (
-                  <label
-                    key={opt.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
-                      bundle === opt.id ? "border-primary bg-accent" : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="bundle"
-                        value={opt.id}
-                        checked={bundle === opt.id}
-                        onChange={(e) => setBundle(e.target.value)}
-                        className="accent-primary"
-                      />
-                      <span className="text-sm text-foreground">{opt.label}</span>
-                    </div>
-                    {opt.priceAdd > 0 && (
-                      <span className="text-sm text-muted-foreground">+{formatPrice(opt.priceAdd)}</span>
-                    )}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <Button variant="hero" size="lg" className="w-full mb-4">
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Thêm vào giỏ hàng — {formatPrice(totalPrice)}
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 bg-white border-b">
+        <div className="flex items-center justify-between px-4 py-3">
+          <Link to="/products" className="p-2 -ml-2 hover:bg-gray-100 rounded-full">
+            <ChevronLeft className="h-6 w-6" />
+          </Link>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Share2 className="h-5 w-5" />
             </Button>
-
-            {/* Description */}
-            <div className="mt-8">
-              <h3 className="font-display font-semibold text-foreground mb-3">Mô tả sản phẩm</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
-            </div>
+            <Link to="/cart" className="p-2 hover:bg-gray-100 rounded-full relative">
+              <ShoppingCart className="h-5 w-5" />
+            </Link>
           </div>
         </div>
-
-        {/* Related Products */}
-        {related.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-display text-2xl font-semibold text-foreground mb-6">Sản phẩm tương tự</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {related.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
-      <Footer />
+
+      {/* Main Image */}
+      <div className="bg-white">
+        <div className="aspect-square relative overflow-hidden">
+          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          <Button variant="ghost" size="icon" className="absolute top-4 right-4 bg-white/80 backdrop-blur rounded-full shadow">
+            <Heart className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Price Section */}
+      <div className="bg-white px-4 py-3 border-b">
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-pink-600">{formatPrice(totalPrice)}</span>
+          {product.original_price && (
+            <span className="text-base text-gray-400 line-through">{formatPrice(product.original_price)}</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-xs font-medium text-pink-600">✓ Giảm 18%</span>
+        </div>
+      </div>
+
+      {/* Shipping */}
+      <div className="bg-white px-4 py-3 border-b">
+        <div className="flex items-center gap-2 text-sm">
+          <Truck className="h-4 w-4 text-green-600" />
+          <span className="text-green-600 font-medium">Miễn phí vận chuyển</span>
+        </div>
+      </div>
+
+      {/* Bundle Options */}
+      <div className="bg-white px-4 py-3 border-b">
+        <p className="text-sm font-medium mb-2">Chọn combo:</p>
+        <div className="space-y-2">
+          {bundleOptions.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => setBundle(option.id)}
+              className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+                bundle === option.id 
+                  ? "border-pink-500 bg-pink-50" 
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <span className={`font-medium ${bundle === option.id ? "text-pink-600" : "text-gray-700"}`}>
+                {option.label}
+              </span>
+              <span className={`text-sm ${bundle === option.id ? "text-pink-600" : "text-gray-500"}`}>
+                {option.priceAdd > 0 ? `+${formatPrice(option.priceAdd)}` : ""}
+              </span>
+              {bundle === option.id && (
+                <Check className="h-5 w-5 text-pink-500" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Good Product Banner */}
+      <div className="bg-gradient-to-r from-amber-100 to-yellow-100 px-4 py-3 mx-4 mt-4 rounded-xl">
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-amber-500" />
+          <span className="text-amber-700 font-medium">Sản phẩm tốt - Đã kiểm duyệt</span>
+        </div>
+      </div>
+
+      {/* Voucher */}
+      <div className="bg-white px-4 py-3 border-b mt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium"> voucher</span>
+            <span className="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded">GIẢM 10K</span>
+          </div>
+          <Button variant="link" className="text-pink-500 h-auto p-0">Lưu</Button>
+        </div>
+      </div>
+
+      {/* Reviews */}
+      <div className="bg-white px-4 py-3 border-b mt-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Đánh giá</span>
+            <span className="text-sm text-gray-500">(378)</span>
+          </div>
+          <Button variant="link" className="text-pink-500 h-auto p-0">Xem tất cả</Button>
+        </div>
+        
+        {/* Rating Summary */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex">
+            {[1,2,3,4,5].map((star) => (
+              <Star key={star} className={`h-4 w-4 ${star <= 5 ? "fill-amber-400 text-amber-400" : "text-gray-300"}`} />
+            ))}
+          </div>
+          <span className="text-sm text-gray-500">5.0</span>
+        </div>
+
+        {/* Review Images */}
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {reviewImages.map((img, i) => (
+            <img key={i} src={img} alt={`review ${i+1}`} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+          ))}
+        </div>
+
+        {/* Sample Reviews */}
+        <div className="space-y-4 mt-4">
+          {reviews.slice(0, 3).map((review, i) => (
+            <div key={i} className="border-b pb-3 last:border-0">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium">
+                  {review.name[0]}
+                </div>
+                <span className="text-sm font-medium">{review.name}</span>
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+              </div>
+              <p className="text-sm text-gray-600 line-clamp-2">{review.content}</p>
+              <p className="text-xs text-gray-400 mt-1">{review.date}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Shop Info */}
+      <div className="bg-white px-4 py-3 border-b mt-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center text-white font-bold">
+            VX
+          </div>
+          <div className="flex-1">
+            <p className="font-medium">Vườn Xanh Shop</p>
+            <p className="text-xs text-gray-500">Online 4 phút trước</p>
+          </div>
+          <Button variant="outline" className="border-pink-500 text-pink-500 hover:bg-pink-50">
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Chat
+          </Button>
+        </div>
+      </div>
+
+      {/* Product Description */}
+      <div className="bg-white px-4 py-3 border-b mt-4">
+        <h3 className="font-medium mb-2">Thông tin sản phẩm</h3>
+        <p className="text-sm text-gray-600">{product.description}</p>
+        <div className="mt-3 space-y-1 text-sm">
+          <p><span className="text-gray-500">Loại:</span> {product.category}</p>
+          <p><span className="text-gray-500">Ánh sáng:</span> {product.light}</p>
+          <p><span className="text-gray-500">Cách chăm sóc:</span> {product.care}</p>
+        </div>
+      </div>
+
+      {/* Related Products - Vertical/Staggered */}
+      <div className="px-4 py-4">
+        <h3 className="font-medium mb-3">Sản phẩm tương tự</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {products.slice(0, 6).map((p) => (
+            <Link key={p.id} to={`/product/${p.slug}`} className="block">
+              <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+                <img src={p.image} alt={p.name} className="w-full aspect-square object-cover" />
+                <div className="p-2">
+                  <p className="text-sm font-medium line-clamp-2">{p.name}</p>
+                  <p className="text-pink-600 font-bold">{formatPrice(p.price)}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Action Bar - Fixed */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 flex items-center gap-3 z-50">
+        <Button variant="outline" size="icon" className="rounded-full border-gray-300">
+          <MessageCircle className="h-5 w-5" />
+        </Button>
+        <Link to="/cart" className="flex-1">
+          <Button variant="outline" className="w-full rounded-full border-pink-500 text-pink-500">
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            Giỏ hàng
+          </Button>
+        </Link>
+        <Button className="flex-[2] rounded-full bg-pink-500 hover:bg-pink-600 border-0">
+          Mua ngay
+        </Button>
+      </div>
+
       <ChatBot />
     </div>
   );
 };
+
+function NotFound() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Không tìm thấy sản phẩm</p>
+    </div>
+  );
+}
 
 export default ProductDetail;

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Send, Bot, User, Loader2, MessageCircle } from "lucide-react";
+import { X, Send, Bot, User, Loader2, MessageCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -23,7 +23,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Xin chào! 🌿 Tôi là trợ lý Vườn Xanh.\nBạn cần tư vấn cây cảnh nào?",
+      content: "Xin chào! 🌿\n\nEm là trợ lý Vườn Xanh.\nTìm cây cảnh nào hôm nay?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -54,7 +54,7 @@ const ChatBot = () => {
           ...prev,
           {
             role: "assistant",
-            content: "Chat đang bảo trì 💬\nLiên hệ Zalo: 0123456789 để được hỗ trợ nhanh nhất!",
+            content: "Chat đang bảo trì 💬\n\nLiên hệ Zalo: 0123456789 để được hỗ trợ!",
           },
         ]);
         setIsLoading(false);
@@ -91,7 +91,7 @@ const ChatBot = () => {
 
       const assistantMessage =
         data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi lại không?";
+        "Dạ, em chưa hiểu rõ. Bạn thử hỏi lại xem sao ạ?";
 
       setMessages((prev) => [...prev, { role: "assistant", content: assistantMessage }]);
     } catch (error) {
@@ -100,7 +100,7 @@ const ChatBot = () => {
         ...prev,
         {
           role: "assistant",
-          content: "Đã xảy ra lỗi kết nối. Vui lòng thử lại sau!",
+          content: "Ối, có lỗi rồi! 😅\nThử lại sau nhé.",
         },
       ]);
     }
@@ -118,22 +118,25 @@ const ChatBot = () => {
   return (
     <>
       {isOpen ? (
-        <div className="fixed bottom-20 right-4 w-[380px] h-[520px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 border border-gray-200">
-          {/* Header - TikTok Shop style gradient */}
-          <div className="bg-gradient-to-r from-[#9333EA] to-[#4F46E5] p-4 flex items-center justify-between">
+        <div className="fixed bottom-20 right-4 w-[380px] h-[520px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50 border border-gray-200">
+          {/* Header - TikTok Shop style */}
+          <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center shadow-sm">
                 <Bot className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-white text-sm">Vườn Xanh</h3>
-                <p className="text-white/80 text-xs">Trực line 24/7</p>
+                <h3 className="font-semibold text-gray-900 text-sm">Vườn Xanh</h3>
+                <p className="text-green-600 text-xs flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  Online 24/7
+                </p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              className="text-white hover:bg-white/20 rounded-full"
+              className="text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full"
               onClick={() => setIsOpen(false)}
             >
               <X className="h-5 w-5" />
@@ -141,43 +144,43 @@ const ChatBot = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {message.role === "assistant" && (
-                  <div className="w-8 h-8 bg-gradient-to-r from-[#9333EA] to-[#4F46E5] rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                     <Bot className="h-4 w-4 text-white" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                     message.role === "user"
-                      ? "bg-gradient-to-r from-[#9333EA] to-[#4F46E5] text-white"
-                      : "bg-white border border-gray-200 text-gray-800"
+                      ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md"
+                      : "bg-white border border-gray-100 text-gray-800 shadow-sm"
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                 </div>
                 {message.role === "user" && (
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="h-4 w-4 text-gray-600" />
+                    <User className="h-4 w-4 text-gray-500" />
                   </div>
                 )}
               </div>
             ))}
             {isLoading && (
               <div className="flex gap-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-[#9333EA] to-[#4F46E5] rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                   <Bot className="h-4 w-4 text-white" />
                 </div>
-                <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3">
+                <div className="bg-white border border-gray-100 rounded-2xl px-4 py-3 shadow-sm">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-[#9333EA] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <div className="w-2 h-2 bg-[#9333EA] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <div className="w-2 h-2 bg-[#9333EA] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 </div>
               </div>
@@ -185,22 +188,22 @@ const ChatBot = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-3 border-t bg-white rounded-b-3xl">
-            <div className="flex gap-2 items-center bg-gray-100 rounded-full px-1 py-1">
+          {/* Input - TikTok Shop style */}
+          <div className="p-3 border-t border-gray-100 bg-white rounded-b-2xl">
+            <div className="flex gap-2 items-center bg-gray-50 rounded-full px-2 py-1.5 border border-gray-100 focus-within:border-pink-200 focus-within:ring-2 focus-within:ring-pink-100/50 transition-all">
               <Input
                 placeholder="Nhập tin nhắn..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
-                className="bg-transparent border-0 focus:ring-0 focus-visible:ring-0 text-sm"
+                className="bg-transparent border-0 focus:ring-0 focus-visible:ring-0 text-sm text-gray-800 placeholder:text-gray-400"
               />
               <Button 
                 size="icon" 
                 onClick={sendMessage} 
                 disabled={isLoading || !input.trim()}
-                className="rounded-full bg-gradient-to-r from-[#9333EA] to-[#4F46E5] hover:from-[#7C3AED] hover:to-[#4338CA] border-0 h-10 w-10"
+                className="rounded-full h-9 w-9 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 border-0 shadow-md hover:shadow-lg transition-all"
               >
                 <Send className="h-4 w-4" />
               </Button>
@@ -210,10 +213,10 @@ const ChatBot = () => {
       ) : (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-2xl z-50 bg-gradient-to-r from-[#9333EA] to-[#4F46E5] hover:from-[#7C3AED] hover:to-[#4338CA] border-0 animate-pulse"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl z-50 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 border-0 hover:shadow-2xl transition-all animate-bounce"
           size="icon"
         >
-          <MessageCircle className="h-8 w-8" />
+          <MessageCircle className="h-7 w-7" />
         </Button>
       )}
     </>

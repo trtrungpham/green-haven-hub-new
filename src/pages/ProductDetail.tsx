@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   ShoppingCart, Share2, ChevronLeft, Truck, Shield, Star, 
-  MessageCircle, Plus, Minus, Heart, Check
+  MessageCircle, Plus, Minus, Heart, Check, Store, Clock
 } from "lucide-react";
 
 const bundleOptions = [
@@ -36,12 +36,12 @@ const ProductDetail = () => {
   const product = products.find((p) => p.slug === slug);
   const [bundle, setBundle] = useState("plant");
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
 
   if (!product) return <NotFound />;
 
   const selectedBundle = bundleOptions.find((b) => b.id === bundle)!;
   const totalPrice = product.price + selectedBundle.priceAdd;
+  const related = products.filter((p) => p.id !== product.id).slice(0, 10);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -75,13 +75,13 @@ const ProductDetail = () => {
       {/* Price Section */}
       <div className="bg-white px-4 py-3 border-b">
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-pink-600">{formatPrice(totalPrice)}</span>
+          <span className="text-2xl font-bold text-red-500">{formatPrice(totalPrice)}</span>
           {product.original_price && (
             <span className="text-base text-gray-400 line-through">{formatPrice(product.original_price)}</span>
           )}
         </div>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-medium text-pink-600">✓ Giảm 18%</span>
+          <span className="text-xs font-medium text-red-500">✓ Giảm 18%</span>
         </div>
       </div>
 
@@ -103,18 +103,18 @@ const ProductDetail = () => {
               onClick={() => setBundle(option.id)}
               className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
                 bundle === option.id 
-                  ? "border-pink-500 bg-pink-50" 
+                  ? "border-red-500 bg-red-50" 
                   : "border-gray-200 hover:border-gray-300"
               }`}
             >
-              <span className={`font-medium ${bundle === option.id ? "text-pink-600" : "text-gray-700"}`}>
+              <span className={`font-medium ${bundle === option.id ? "text-red-600" : "text-gray-700"}`}>
                 {option.label}
               </span>
-              <span className={`text-sm ${bundle === option.id ? "text-pink-600" : "text-gray-500"}`}>
+              <span className={`text-sm ${bundle === option.id ? "text-red-600" : "text-gray-500"}`}>
                 {option.priceAdd > 0 ? `+${formatPrice(option.priceAdd)}` : ""}
               </span>
               {bundle === option.id && (
-                <Check className="h-5 w-5 text-pink-500" />
+                <Check className="h-5 w-5 text-red-500" />
               )}
             </button>
           ))}
@@ -134,9 +134,9 @@ const ProductDetail = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium"> voucher</span>
-            <span className="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded">GIẢM 10K</span>
+            <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">GIẢM 10K</span>
           </div>
-          <Button variant="link" className="text-pink-500 h-auto p-0">Lưu</Button>
+          <Button variant="link" className="text-red-500 h-auto p-0">Lưu</Button>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ const ProductDetail = () => {
             <span className="font-medium">Đánh giá</span>
             <span className="text-sm text-gray-500">(378)</span>
           </div>
-          <Button variant="link" className="text-pink-500 h-auto p-0">Xem tất cả</Button>
+          <Button variant="link" className="text-red-500 h-auto p-0">Xem tất cả</Button>
         </div>
         
         {/* Rating Summary */}
@@ -189,23 +189,6 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Shop Info */}
-      <div className="bg-white px-4 py-3 border-b mt-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center text-white font-bold">
-            VX
-          </div>
-          <div className="flex-1">
-            <p className="font-medium">Vườn Xanh Shop</p>
-            <p className="text-xs text-gray-500">Online 4 phút trước</p>
-          </div>
-          <Button variant="outline" className="border-pink-500 text-pink-500 hover:bg-pink-50">
-            <MessageCircle className="h-4 w-4 mr-1" />
-            Chat
-          </Button>
-        </div>
-      </div>
-
       {/* Product Description */}
       <div className="bg-white px-4 py-3 border-b mt-4">
         <h3 className="font-medium mb-2">Thông tin sản phẩm</h3>
@@ -217,17 +200,17 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Related Products - Vertical/Staggered */}
+      {/* Related Products - Vertical/Staggered - 10 items */}
       <div className="px-4 py-4">
         <h3 className="font-medium mb-3">Sản phẩm tương tự</h3>
         <div className="grid grid-cols-2 gap-3">
-          {products.slice(0, 6).map((p) => (
+          {related.map((p) => (
             <Link key={p.id} to={`/product/${p.slug}`} className="block">
               <div className="bg-white rounded-xl overflow-hidden shadow-sm">
                 <img src={p.image} alt={p.name} className="w-full aspect-square object-cover" />
                 <div className="p-2">
                   <p className="text-sm font-medium line-clamp-2">{p.name}</p>
-                  <p className="text-pink-600 font-bold">{formatPrice(p.price)}</p>
+                  <p className="text-red-500 font-bold">{formatPrice(p.price)}</p>
                 </div>
               </div>
             </Link>
@@ -235,18 +218,38 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Bottom Action Bar - Fixed */}
+      {/* Shop Info - At the bottom as original */}
+      <div className="bg-white px-4 py-4 border-t mt-4">
+        <div className="flex items-center gap-3 py-2">
+          <div className="w-14 h-14 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+            VX
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-lg">Vườn Xanh Shop</p>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <Clock className="h-3 w-3" />
+              <span>Online 4 phút trước</span>
+            </div>
+          </div>
+          <Button className="bg-red-500 hover:bg-red-600 border-0">
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Chat
+          </Button>
+        </div>
+      </div>
+
+      {/* Bottom Action Bar - Fixed - Red Buy Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 flex items-center gap-3 z-50">
         <Button variant="outline" size="icon" className="rounded-full border-gray-300">
           <MessageCircle className="h-5 w-5" />
         </Button>
         <Link to="/cart" className="flex-1">
-          <Button variant="outline" className="w-full rounded-full border-pink-500 text-pink-500">
+          <Button variant="outline" className="w-full rounded-full border-red-500 text-red-500">
             <ShoppingCart className="h-4 w-4 mr-2" />
             Giỏ hàng
           </Button>
         </Link>
-        <Button className="flex-[2] rounded-full bg-pink-500 hover:bg-pink-600 border-0">
+        <Button className="flex-[2] rounded-full bg-red-500 hover:bg-red-600 border-0">
           Mua ngay
         </Button>
       </div>
